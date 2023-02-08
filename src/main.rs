@@ -11,10 +11,12 @@ fn main() {
     let image_width = 255;
     let max_ccv = 255;
 
-
-    // Write file and the required ppm header
+    // PPM requirements and a PPM Viewer
     // https://web.cse.ohio-state.edu/~shen.94/681/Site/ppm_help.html
     // https://www.cs.rhodes.edu/welshc/COMP141_F16/ppmReader.html
+
+
+    // Write file and the required ppm header
     let file_name = "image.ppm";
     let mut file = OpenOptions::new()
         .read(true)
@@ -22,12 +24,13 @@ fn main() {
         .create(true)
         .append(false)
         .open(file_name).unwrap();
+
     match writeln!(file, "{}", format!("P3 {} {} {}\n", image_width, image_height, max_ccv)) {
         Ok(_) => (),
-        Err(_) => println!("Problem writing header"),
+        Err(_) => println!("Problem writing header in {:?}", file),
     }
 
-    // Write file contents
+    // Write file contents according to ppm specifications
     let bar = ProgressBar::new(image_height);
     bar.set_message("Scanlines");
     for j in 0..=image_height-1 {
