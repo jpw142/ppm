@@ -7,8 +7,8 @@ mod point3;
 fn main() {
     
     // Image Properties
-    let image_height = 255;
-    let image_width = 255;
+    let image_height = 256;
+    let image_width = 256;
     let max_ccv = 255;
 
     // PPM requirements and a PPM Viewer
@@ -34,7 +34,7 @@ fn main() {
     bar.set_message("Scanlines");
     for j in 0..=image_height-1 {
         for i in 0..=image_width-1 {
-                let color = Color{r:i, g:j as u8, b:127};
+                let color = Color{r: ((i as f32/image_width as f32) * max_ccv as f32) as u8 , g: ((j as f32/image_height as f32) * max_ccv as f32) as u8, b: 127};
                 color.write_color(&mut file);
         }
         bar.inc(1);
