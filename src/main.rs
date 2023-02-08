@@ -15,7 +15,6 @@ fn main() {
     // https://web.cse.ohio-state.edu/~shen.94/681/Site/ppm_help.html
     // https://www.cs.rhodes.edu/welshc/COMP141_F16/ppmReader.html
 
-
     // Write file and the required ppm header
     let file_name = "image.ppm";
     let mut file = OpenOptions::new()
