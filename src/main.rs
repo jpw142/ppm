@@ -12,8 +12,10 @@ fn main() {
     let max_ccv = 255;
 
 
-    // Write file and header
-    let file_name = "lines.ppm";
+    // Write file and the required ppm header
+    // https://web.cse.ohio-state.edu/~shen.94/681/Site/ppm_help.html
+    // https://www.cs.rhodes.edu/welshc/COMP141_F16/ppmReader.html
+    let file_name = "image.ppm";
     let mut file = OpenOptions::new()
         .read(true)
         .write(true)
