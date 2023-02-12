@@ -4,7 +4,7 @@ use indicatif::{ProgressBar};
 mod color;
 use color::{Color, WriteColor};
 mod vec3;
-use vec3::{Vec3,UnitVector, DotProduct};
+use vec3::{Vec3,UnitVector, DotProduct, Length};
 use vec3::ray::{Ray, GetDirection, At};
 
 // Source Material
@@ -16,14 +16,14 @@ use vec3::ray::{Ray, GetDirection, At};
 
 fn hit_sphere(center: Vec3, radius: f64, ray: &Ray) -> f64{
     let oc = ray.origin - center;
-    let a = ray.direction.dot(ray.direction);
-    let b =  oc.dot(ray.direction) * 2.0;
-    let c = oc.dot(oc) - radius*radius;
-    let decriminant = b*b - 4.0*a*c;
-    if decriminant < 0.0 {
+    let a = ray.direction.length_squared();
+    let half_b = oc.dot(ray.direction);
+    let c = oc.length_squared() - radius*radius;
+    let discriminant = half_b*half_b - a*c;
+    if discriminant < 0.0 {
         return -1.0;
     } else {
-        return -b - f64::sqrt(decriminant)/(2.0*a);
+        return (half_b*(-1.0) - f64::sqrt(discriminant)) / a;
     }
 
 }
@@ -31,8 +31,8 @@ fn hit_sphere(center: Vec3, radius: f64, ray: &Ray) -> f64{
 fn ray_color(ray: Ray) -> Color{
     let t = hit_sphere(Vec3{x:0.0,y:0.0,z:-1.0}, 0.5, &ray);
     if t > 0.0 {
-        let N = (ray.at(t) - Vec3{x:0.0,y:0.0,z:-1.0}).unit_vector();
-        return Color{r: (N.x + 1.0)*0.5, b: (N.y+1.0)*0.5, g: (N.z + 1.0)*0.5};
+        let n = (ray.at(t) - Vec3{x:0.0,y:0.0,z:-1.0}).unit_vector();
+        return Color{r: (n.x + 1.0)*0.5, b: (n.y+1.0)*0.5, g: (n.z + 1.0)*0.5};
     }
     let unit_direction = ray.direction().unit_vector();
     let t = 0.5*(unit_direction.y + 1.0);
@@ -44,7 +44,7 @@ fn main() {
     // Image Properties
 
     let aspect_ratio = 16.0/9.0;
-    let image_width = 5000;
+    let image_width = 1000;
     let image_height = (image_width as f64/aspect_ratio) as i32;
 
     // Camera
