@@ -4,8 +4,8 @@ use indicatif::{ProgressBar};
 mod color;
 use color::{Color, WriteColor};
 mod vec3;
-use vec3::{Vec3,UnitVector};
-use vec3::ray::{Ray, GetDirection};
+use vec3::{Vec3,UnitVector, DotProduct};
+use vec3::ray::{Ray, GetDirection, At};
 
 // Source Material
 // https://raytracing.github.io/
@@ -14,11 +14,29 @@ use vec3::ray::{Ray, GetDirection};
 // https://web.cse.ohio-state.edu/~shen.94/681/Site/ppm_help.html
 // https://www.cs.rhodes.edu/welshc/COMP141_F16/ppmReader.html
 
+fn hit_sphere(center: Vec3, radius: f64, ray: &Ray) -> f64{
+    let oc = ray.origin - center;
+    let a = ray.direction.dot(ray.direction);
+    let b =  oc.dot(ray.direction) * 2.0;
+    let c = oc.dot(oc) - radius*radius;
+    let decriminant = b*b - 4.0*a*c;
+    if decriminant < 0.0 {
+        return -1.0;
+    } else {
+        return -b - f64::sqrt(decriminant)/(2.0*a);
+    }
+
+}
 
 fn ray_color(ray: Ray) -> Color{
+    let t = hit_sphere(Vec3{x:0.0,y:0.0,z:-1.0}, 0.5, &ray);
+    if t > 0.0 {
+        let N = (ray.at(t) - Vec3{x:0.0,y:0.0,z:-1.0}).unit_vector();
+        return Color{r: (N.x + 1.0)*0.5, b: (N.y+1.0)*0.5, g: (N.z + 1.0)*0.5};
+    }
     let unit_direction = ray.direction().unit_vector();
     let t = 0.5*(unit_direction.y + 1.0);
-    return Color{r: 1.0, b: 1.0, g: 1.0}*(1.0-t) + (Color{r:0.5, g: 0.7, b: 1.0}*t);
+    return Color{r: 1.0, b: 1.0, g: 1.0}*(1.0-t) + Color{r:0.5, g: 0.7, b: 1.0}*t;
 
 }
 fn main() {
@@ -26,7 +44,7 @@ fn main() {
     // Image Properties
 
     let aspect_ratio = 16.0/9.0;
-    let image_width = 256;
+    let image_width = 5000;
     let image_height = (image_width as f64/aspect_ratio) as i32;
 
     // Camera
