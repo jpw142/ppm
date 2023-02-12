@@ -85,6 +85,15 @@ impl UnitVector for Vec3 {
     }
 }
 
+// Dot Product
+pub trait DotProduct {
+    fn dot(self, vec: Vec3) -> f64;
+}
+impl DotProduct for Vec3 {
+    fn dot(self, vec: Vec3) -> f64 {
+        return self.x*vec.x + self.y*vec.y + self.z*vec.z;
+    }
+}
 pub mod ray {
     use super::Vec3;
     pub struct Ray {pub origin: super::Vec3, pub direction: Vec3}
